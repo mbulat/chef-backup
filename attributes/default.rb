@@ -27,3 +27,6 @@ default[:backup][:mail][:on_failure] = true
 default[:backup][:mail][:from_address] = "mbulat@credrock.com"
 default[:backup][:mail][:to_address] = "mbulat@credrock.com"
 default[:backup][:mail][:domain] = "credrock.com"
+
+default[:backup][:campfire][:sub_domain] = "tidewinds" 
+default[:backup][:campfire][:room_id] = "557533"

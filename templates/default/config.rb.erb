@@ -58,5 +58,14 @@ Backup::Model.new(:<%= @config[:name] %>, '<%= @config[:description] %>') do
     mail.domain               = '<%= @config[:mail][:domain] %>'
   end
 
+  notify_by Campfire do |campfire|
+    campfire.on_success = true
+    campfire.on_warning = true
+    campfire.on_failure = true
+
+    campfire.api_token = '<%= @backup_bag["campfire_token"] %>'
+    campfire.subdomain = '<%= @config[:campfire][:sub_domain] %>'
+    campfire.room_id   = '<%= @config[:campfire][:room_id] %>'
+  end
 
 end

@@ -19,7 +19,7 @@ package "libxml-dev" do
   action :install
 end
 
-data_bag = Chef::EncryptedDataBagItem.load("passwords","backup")
+backup_bag = Chef::EncryptedDataBagItem.load("passwords","backup")
 
 ['backup', 's3sync', 'fog', 'mail', 'whenever', 'popen4'].each do |gem_name|
   gem_package gem_name do
@@ -51,7 +51,7 @@ end
 template "/home/#{node[:backup][:backup_user]}/Backup/config.rb" do
   owner node[:backup][:backup_user]
   source "config.rb.erb"
-  variables(:config => node[:backup], :data => data_bag)
+  variables(:config => node[:backup], :backup_bag => backup_bag)
   not_if { File.exists?("/home/#{node[:backup][:backup_user]}/Backup/config.rb")}
 end
 

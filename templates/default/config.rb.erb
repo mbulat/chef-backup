@@ -19,9 +19,7 @@ Backup::Model.new(:<%= @config[:name] %>, '<%= @config[:description] %>') do
   end
   <% end %>
 
-  compress_with Gzip do |compression|
-    compression.best = true
-  end
+  compress_with Gzip
 
   ##
   # SCP (Secure Copy) [Storage]

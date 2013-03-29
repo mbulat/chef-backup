@@ -1,43 +1,57 @@
 Backup::Model.new(:<%= @config[:name] %>, '<%= @config[:description] %>') do
+  ##
+  # Split [Splitter]
+  #
+  # Split the backup file in to chunks of 250 megabytes
+  # if the backup file size exceeds 250 megabytes
+  #
+  split_into_chunks_of 250
 
 
   <% @config[:database][:databases].each do |database| %>
-  database MySQL do |database|
+  database PostgreSQL do |database|
     database.name               = '<%= database %>'
     database.username           = '<%= @config[:database][:username] %>'
-    database.password           = '<%= @config[:database][:password] %>'
-    database.additional_options = ['--single-transaction', '--quick']
+    database.password           = '<%= @data[:database_password] %>'
+    database.host               = '<%= @config[:database][:host] %>'
+    database.port               = '<%= @config[:database][:port] %>'
+    database.additional_options = ['-xc', '-E=utf8']
   end
   <% end %>
 
   compress_with Gzip do |compression|
     compression.best = true
   end
+
+  ##
+  # SCP (Secure Copy) [Storage]
+  #
+  store_with SCP do |server|
+    server.username   = '<%= @config[:scp][:username] %>'
+    server.ip         = '<%= @config[:scp][:host] %>'
+    server.port       = '<%= @config[:scp][:port] %>'
+    server.path       = '<%= @config[:scp][:path] %>'
+    server.keep       = '<%= @config[:scp][:keep] %>'
+  end
+
+  ##
+  # OpenSSL [Encryptor]
+  #
+  encrypt_with OpenSSL do |encryption|
+    encryption.password      = '<%= @data[:ssl_password] %>'            # From String
+    encryption.base64        = true
+    encryption.salt          = true
+  end
   
   store_with S3 do |s3|
-    s3.access_key_id      = '<%= @config[:s3][:aws_access_key] %>'
-    s3.secret_access_key  = '<%= @config[:s3][:aws_secret_key] %>'
+    s3.access_key_id      = '<%= @data[:aws_access_key] %>'
+    s3.secret_access_key  = '<%= @data[:aws_secret_key] %>'
     s3.region             = '<%= @config[:s3][:bucket_region] %>'
     s3.bucket             = '<%= @config[:s3][:bucket_name] %>'
+    s3.path               = '<%= @config[:s3][:path] %>'
     s3.keep               = '<%= @config[:s3][:keep] %>'
   end
-
   
-  sync_with S3 do |s3|
-    s3.access_key_id     = "<%= @config[:s3][:aws_access_key] %>"
-    s3.secret_access_key = "<%= @config[:s3][:aws_secret_key] %>"
-    s3.bucket            = "<%= @config[:s3][:bucket_name] %>"
-    s3.path              = "<%= @config[:s3][:sync_path] %>"
-    s3.mirror            = true
-
-    s3.directories do |directory|
-      <% @config[:s3][:sync_directories].each do |directory| %>
-      directory.add "<%= directory %>"
-      <% end %>
-    end
-  end
-  
-
   notify_by Mail do |mail|
     mail.on_success           = <%= @config[:mail][:on_success] %>
     mail.on_failure           = <%= @config[:mail][:on_failure] %>

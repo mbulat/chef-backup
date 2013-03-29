@@ -1,30 +1,29 @@
-default[:backup][:backup_user] = 'deploy'
+default[:backup][:backup_user] = 'ubuntu'
 
 default[:backup][:name] = "server_backup"
 default[:backup][:description] = "a chef generated server backup"
 
 
 default[:backup][:database][:username] = 'admin_user'
-default[:backup][:database][:password] = 'admin_password'
-default[:backup][:database][:databases] = ['test_database', 'test_db2']
+default[:backup][:database][:host] = 'credrock'
+default[:backup][:database][:databases] = ['credrock']
+default[:backup][:database][:port] = 5432
 
-
-default[:backup][:s3][:aws_access_key] = File.read("/home/#{default[:backup][:backup_user]}/.aws/access_key").gsub(/\\n/, "")
-default[:backup][:s3][:aws_secret_key] = File.read("/home/#{default[:backup][:backup_user]}/.aws/secret_key").gsub(/\\n/, "")
 default[:backup][:s3][:bucket_region] = 'us-east-1'
+default[:backup][:s3][:path] = 'credrock'
+default[:backup][:s3][:bucket_name] = 'credrock_db_backups'
+default[:backup][:s3][:keep] = '100'
 
+default[:backup][:scp][:username] = "crback"
+default[:backup][:scp][:host] = "fw.tidewinds.com"
+default[:backup][:scp][:port] = "22"
+default[:backup][:scp][:path] = "~/hole/"
+default[:backup][:scp][:keep] = 100
 
 # Create this beforehand
-default[:backup][:s3][:bucket_name] = 'bucket_name'
-default[:backup][:s3][:keep] = '10'
 
-default[:backup][:s3][:sync_path] = "/files"
-
-# List directories which you want to sync.
-default[:backup][:s3][:sync_directories] = ["/tmp"]
-
-default[:backup][:mail][:on_success] = true
+default[:backup][:mail][:on_success] = false
 default[:backup][:mail][:on_failure] = true
-default[:backup][:mail][:from_address] = "backup@test.com"
-default[:backup][:mail][:to_address] = "youremail@test.com"
-default[:backup][:mail][:domain] = "domain.com"
+default[:backup][:mail][:from_address] = "mbulat@credrock.com"
+default[:backup][:mail][:to_address] = "mbulat@credrock.com"
+default[:backup][:mail][:domain] = "credrock.com"

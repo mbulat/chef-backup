@@ -19,6 +19,7 @@ package "libxml-dev" do
   action :install
 end
 
+cottontail_data = Chef::EncryptedDataBagItem.load("passwords","backup")
 
 ['backup', 's3sync', 'fog', 'mail', 'whenever', 'popen4'].each do |gem_name|
   gem_package gem_name do

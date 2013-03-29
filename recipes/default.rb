@@ -27,11 +27,25 @@ data_bag = Chef::EncryptedDataBagItem.load("passwords","backup")
   end
 end
 
-['Backup', 'Backup/config'].each do |dir|
+['Backup', 'Backup/config', 'Backup/log'].each do |dir|
   execute "mkdir /home/#{node[:backup][:backup_user]}/#{dir}" do
     user node[:backup][:backup_user]
     only_if { !File.directory?("/home/#{node[:backup][:backup_user]}/#{dir}") }
   end
+end
+
+script "backup dependencies" do
+  interpreter "bash"
+  user "root"
+  cwd "/home/#{node[:backup][:backup_user]}/Backup"
+  code <<-EOH
+  /usr/local/bin/backup dependencies --install net-ssh
+  /usr/local/bin/backup dependencies --install net-scp
+  /usr/local/bin/backup dependencies --install excon
+  /usr/local/bin/backup dependencies --install fog
+  sudo touch /home/#{node[:backup][:backup_user]}/Backup/.installed
+  EOH
+  not_if "test -f /home/#{node[:backup][:backup_user]}/Backup/.installed"
 end
 
 template "/home/#{node[:backup][:backup_user]}/Backup/config.rb" do
@@ -57,5 +71,14 @@ template "/etc/logrotate.d/whenever_log" do
   not_if { File.exists? "/etc/logrotate.d/whenever_log" }
 end
 
-
-
+# Do manually since we don't want every machine doing this
+#script "schedule" do
+  #interpreter "bash"
+  #user "root"
+  #cwd "/home/#{node[:backup][:backup_user]}/Backup"
+  #code <<-EOH
+  #/usr/local/bin/whenever -w
+  #sudo touch /home/#{node[:backup][:backup_user]}/Backup/.scheduled
+  #EOH
+  #not_if "test -f /home/#{node[:backup][:backup_user]}/Backup/.scheduled"
+#end

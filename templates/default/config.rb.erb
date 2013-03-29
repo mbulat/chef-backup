@@ -12,7 +12,7 @@ Backup::Model.new(:<%= @config[:name] %>, '<%= @config[:description] %>') do
   database PostgreSQL do |database|
     database.name               = '<%= database %>'
     database.username           = '<%= @config[:database][:username] %>'
-    database.password           = '<%= @backup_bag[:database_password] %>'
+    database.password           = '<%= @backup_bag["database_password"] %>'
     database.host               = '<%= @config[:database][:host] %>'
     database.port               = '<%= @config[:database][:port] %>'
     database.additional_options = ['-xc', '-E=utf8']
@@ -36,14 +36,14 @@ Backup::Model.new(:<%= @config[:name] %>, '<%= @config[:description] %>') do
   # OpenSSL [Encryptor]
   #
   encrypt_with OpenSSL do |encryption|
-    encryption.password      = '<%= @backup_bag[:ssl_password] %>'            # From String
+    encryption.password      = '<%= @backup_bag["ssl_password"] %>'            # From String
     encryption.base64        = true
     encryption.salt          = true
   end
   
   store_with S3 do |s3|
-    s3.access_key_id      = '<%= @backup_bag[:aws_access_key] %>'
-    s3.secret_access_key  = '<%= @backup_bag[:aws_secret_key] %>'
+    s3.access_key_id      = '<%= @backup_bag["aws_access_key"] %>'
+    s3.secret_access_key  = '<%= @backup_bag["aws_secret_key"] %>'
     s3.region             = '<%= @config[:s3][:bucket_region] %>'
     s3.bucket             = '<%= @config[:s3][:bucket_name] %>'
     s3.path               = '<%= @config[:s3][:path] %>'

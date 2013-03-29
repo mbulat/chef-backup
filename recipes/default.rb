@@ -43,6 +43,7 @@ script "backup dependencies" do
   /usr/local/bin/backup dependencies --install net-scp
   /usr/local/bin/backup dependencies --install excon
   /usr/local/bin/backup dependencies --install fog
+  /usr/local/bin/backup dependencies --install httparty
   sudo touch /home/#{node[:backup][:backup_user]}/Backup/.installed
   EOH
   not_if "test -f /home/#{node[:backup][:backup_user]}/Backup/.installed"

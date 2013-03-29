@@ -4,8 +4,8 @@ default[:backup][:name] = "server_backup"
 default[:backup][:description] = "a chef generated server backup"
 
 
-default[:backup][:database][:username] = 'admin_user'
-default[:backup][:database][:host] = 'credrock'
+default[:backup][:database][:username] = 'credrock'
+default[:backup][:database][:host] = 'localhost'
 default[:backup][:database][:databases] = ['credrock']
 default[:backup][:database][:port] = 5432
 
